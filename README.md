@@ -4,4 +4,5 @@
 
 ```bash
 gcc main.c -o main.exe -lXinput
+```
 [![演示视频](https://i0.hdslb.com/bfs/archive/25939480273.jpg)](https://www.bilibili.com/video/BV1VdbcexEev)
