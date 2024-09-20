@@ -30,6 +30,9 @@ int main() {
     int leftTriggerPressed = 0;
     int rightTriggerPressed = 0;
 
+    int oMouseX = 0;
+    int oMouseY = 0;
+
     while (1) {
         // 获取手柄状态
         DWORD dwResult = XInputGetState(0, &state);
@@ -41,12 +44,32 @@ int main() {
             SHORT stX = -state.Gamepad.sThumbRX;    // 右摇杆X轴
             SHORT stY = state.Gamepad.sThumbRY;     // 右摇杆Y轴
 
-            // 应用映射公式，将摇杆输入映射到屏幕坐标
-            int mouseX = (int)(thumbX * SCALE_X + SCREEN_WIDTH / 2);
-            int mouseY = (int)(SCREEN_HEIGHT / 2 - thumbY * SCALE_Y);
+            int addx = (int)(stX * SCALE_X_ST);
+            int addy = (int)(stY * SCALE_Y_ST);
+            int mouseX = 0;
+            int mouseY = 0;
 
-            mouseX = mouseX + (int)(stX * SCALE_X_ST);
-            mouseY = mouseY + (int)(stY * SCALE_Y_ST);
+            if (abs(addx - oMouseX) < 10 || abs(addy - oMouseY) < 10) {
+                addx = oMouseX;
+                addy = oMouseY;
+                mouseX = (int)(thumbX * SCALE_X + SCREEN_WIDTH / 2);
+                mouseY = (int)(SCREEN_HEIGHT / 2 - thumbY * SCALE_Y);
+                mouseX = mouseX + addx;
+                mouseY = mouseY + addy;
+
+            } else {
+                mouseX = (int)(thumbX * SCALE_X + SCREEN_WIDTH / 2);
+                mouseY = (int)(SCREEN_HEIGHT / 2 - thumbY * SCALE_Y);
+                mouseX = mouseX + addx;
+                mouseY = mouseY + addy;
+                oMouseX = addx;
+                oMouseY = addy;
+
+            }
+
+            // 应用映射公式，将摇杆输入映射到屏幕坐标
+            
+            
 
             // 确保鼠标坐标在屏幕范围内
             if (mouseX < 0) mouseX = 0;
@@ -92,7 +115,7 @@ int main() {
             }
 
             // 输出调试信息
-            printf("ThumbX: %d, ThumbY: %d, MouseX: %d, MouseY: %d\n", thumbX, thumbY, mouseX, mouseY);
+            printf("LX: %d, LY: %d, RX:%d, RY:%d, MouseX: %d, MouseY: %d\n", thumbX, thumbY,stX,stY, mouseX, mouseY);
         } else {
             // 手柄未连接
             printf("Controller not connected\n");
